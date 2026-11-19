@@ -6,9 +6,6 @@
       "name": "Wordpress Plugin",
       "kind": "SERVICE",
       "path": "tebuto-online-terminbuchung",
-      "integrations": {
-        "sonarqube": "tebuto_wordpress-plugin_d85838b5-fae9-48e3-9636-0ec145a330f3"
-      },
       "environments": {
         "production": {}
       }
