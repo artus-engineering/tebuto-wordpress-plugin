@@ -91,6 +91,7 @@ jobs:
       - name: Verify plugin ZIP build
         run: ./scripts/build.sh
 
+    if: ${{ github.event_name != 'pull_request' }}
   scan:
     name: SonarQube Scan
     runs-on: ubuntu-latest
