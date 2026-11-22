@@ -175,12 +175,26 @@
 	flex-direction: column;
 	min-width: 0;
 	min-height: 0;
+	font-family: inherit;
+	font-weight: var(--tebuto-font-regular, 450);
+	letter-spacing: normal;
 
 	.components-panel__body {
 		border: 1px solid var(--tebuto-border, #dce8e7);
 		margin-bottom: 12px;
 		border-radius: var(--tebuto-radius, 12px);
 		background: #fff;
+	}
+
+	.components-button,
+	.components-base-control,
+	.components-base-control__label,
+	.components-toggle-control__label,
+	.components-panel__body-title,
+	input,
+	textarea {
+		font-family: inherit;
+		letter-spacing: normal;
 	}
 }
 
@@ -249,22 +263,5 @@
 @media (max-width: 960px) {
 	.tebuto-widget-settings-layout {
 		grid-template-columns: 1fr;
-	}
-}
-
-.tebuto-widget-settings-controls {
-	font-family: inherit;
-	font-weight: var(--tebuto-font-regular, 450);
-	letter-spacing: normal;
-
-	.components-button,
-	.components-base-control,
-	.components-base-control__label,
-	.components-toggle-control__label,
-	.components-panel__body-title,
-	input,
-	textarea {
-		font-family: inherit;
-		letter-spacing: normal;
 	}
 }

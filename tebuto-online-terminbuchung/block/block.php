@@ -34,6 +34,17 @@ add_action( 'init', 'tebuto_register_block' );
  * @return array<string, string> Shortcode overrides.
  */
 function tebuto_block_shortcode_attributes( array $attributes ): array {
+	$atts = tebuto_map_scalar_block_attributes( $attributes );
+	return tebuto_apply_configured_categories( $atts, $attributes );
+}
+
+/**
+ * Map camelCase block attributes onto shortcode attribute names.
+ *
+ * @param array<string, mixed> $attributes Block attributes.
+ * @return array<string, string> Shortcode overrides.
+ */
+function tebuto_map_scalar_block_attributes( array $attributes ): array {
 	$map  = array(
 		'primaryColor'               => 'primary_color',
 		'backgroundColor'            => 'background_color',
@@ -52,30 +63,101 @@ function tebuto_block_shortcode_attributes( array $attributes ): array {
 		'customCss'                  => 'custom_css',
 	);
 	$atts = array();
+
 	foreach ( $map as $camel => $snake ) {
-		if ( array_key_exists( $camel, $attributes ) && is_scalar( $attributes[ $camel ] ) ) {
-			$value          = $attributes[ $camel ];
-			$atts[ $snake ] = is_bool( $value ) ? ( $value ? 'true' : 'false' ) : (string) $value;
+		if ( ! array_key_exists( $camel, $attributes ) || ! is_scalar( $attributes[ $camel ] ) ) {
+			continue;
 		}
+
+		$atts[ $snake ] = tebuto_block_attribute_string( $attributes[ $camel ] );
 	}
-	// Keep saved subaccount selections usable when the management API is unavailable.
-	$configured = json_decode( (string) ( $attributes['configuredCategoriesJson'] ?? '' ), true );
-	if ( is_array( $configured ) ) {
-		$ids = array();
-		foreach ( $configured as $category ) {
-			if ( ! is_array( $category ) || empty( $category['id'] ) || ! is_numeric( $category['id'] ) || (int) $category['id'] <= 0 ) {
-				continue;
-			}
-			$ids[] = (int) $category['id'];
-			if ( ( $category['isFromSubaccount'] ?? false ) === true ) {
-				$atts['show_provider_filter'] = 'true';
-			}
-		}
-		if ( empty( $atts['categories'] ) && ! empty( $ids ) ) {
-			$atts['categories'] = implode( ',', $ids );
-		}
-	}
+
 	return $atts;
+}
+
+/**
+ * Convert a scalar block attribute to a shortcode string.
+ *
+ * @param bool|float|int|string $value Block attribute value.
+ * @return string
+ */
+function tebuto_block_attribute_string( $value ): string {
+	if ( ! is_bool( $value ) ) {
+		return (string) $value;
+	}
+
+	if ( $value ) {
+		return 'true';
+	}
+
+	return 'false';
+}
+
+/**
+ * Apply saved category selections when the categories attribute is empty.
+ *
+ * Keeps saved subaccount selections usable when the management API is unavailable.
+ *
+ * @param array<string, string> $atts       Shortcode attributes.
+ * @param array<string, mixed>  $attributes Block attributes.
+ * @return array<string, string> Shortcode overrides.
+ */
+function tebuto_apply_configured_categories( array $atts, array $attributes ): array {
+	$configured = json_decode( (string) ( $attributes['configuredCategoriesJson'] ?? '' ), true );
+	if ( ! is_array( $configured ) ) {
+		return $atts;
+	}
+
+	$ids = tebuto_configured_category_ids( $configured, $atts );
+	if ( empty( $atts['categories'] ) && array() !== $ids ) {
+		$atts['categories'] = implode( ',', $ids );
+	}
+
+	return $atts;
+}
+
+/**
+ * Collect saved category ids and enable the provider filter for subaccounts.
+ *
+ * @param array<int, mixed>     $configured Saved category entries.
+ * @param array<string, string> $atts       Shortcode attributes, updated in place.
+ * @return int[] Category ids.
+ */
+function tebuto_configured_category_ids( array $configured, array &$atts ): array {
+	$ids = array();
+
+	foreach ( $configured as $category ) {
+		$id = tebuto_configured_category_id( $category );
+		if ( $id === null ) {
+			continue;
+		}
+
+		$ids[] = $id;
+		if ( ( $category['isFromSubaccount'] ?? false ) === true ) {
+			$atts['show_provider_filter'] = 'true';
+		}
+	}
+
+	return $ids;
+}
+
+/**
+ * Read a positive category id from a saved configurator entry.
+ *
+ * @param mixed $category Saved category entry.
+ * @return int|null
+ */
+function tebuto_configured_category_id( $category ): ?int {
+	if ( ! is_array( $category ) || empty( $category['id'] ) || ! is_numeric( $category['id'] ) ) {
+		return null;
+	}
+
+	$id = (int) $category['id'];
+	if ( $id <= 0 ) {
+		return null;
+	}
+
+	return $id;
 }
 
 /**
