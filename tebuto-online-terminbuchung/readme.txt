@@ -210,7 +210,7 @@ Unter **Tebuto → Shortcode** kannst du Farben, Theme-Presets, Kategorienfilter
 == Upgrade Notice ==
 
 = 2.4.4 =
-TODO: Add upgrade notice
+Wartungs-Update: Abhängigkeiten und Build-Tooling aktualisiert, keine Änderungen an der Terminbuchung.
 
 = 2.4.3 =
 Wartungs-Update: interne CI- und Build-Anpassungen, keine Änderungen an der Terminbuchung.
