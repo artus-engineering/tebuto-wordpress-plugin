@@ -88,11 +88,15 @@
 .tebuto-category-label {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	flex-wrap: wrap;
+	gap: 2px 8px;
 	min-width: 0;
 	flex: 1 1 auto;
-	overflow: hidden;
 	line-height: inherit;
+}
+
+.tebuto-category-item--locked {
+	cursor: default;
 }
 
 .tebuto-category-label-text {
@@ -131,6 +135,58 @@
 	gap: 10px;
 	padding: 16px;
 	color: var(--tebuto-foreground-tertiary, #5d706e);
+}
+
+.tebuto-widget-loading {
+	--tebuto-widget-loading-color: var(--tebuto-primary-brand, #00b4a9);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	box-sizing: border-box;
+	min-height: 384px;
+	padding: 24px;
+	color: var(--tebuto-foreground-tertiary, #5d706e);
+}
+
+.tebuto-widget-loading__spinner {
+	box-sizing: border-box;
+	width: 28px;
+	height: 28px;
+	border: 3px solid var(--tebuto-widget-loading-color);
+	border-right-color: transparent;
+	border-radius: 50%;
+	animation: tebuto-widget-loading-spin 0.8s linear infinite;
+}
+
+.tebuto-widget-loading__label {
+	font-size: 13px;
+	line-height: 1.4;
+}
+
+.tebuto-widget-loading-error {
+	margin: 0;
+	padding: 24px;
+	min-height: 384px;
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	color: var(--tebuto-foreground-tertiary, #5d706e);
+}
+
+@keyframes tebuto-widget-loading-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.tebuto-widget-loading__spinner {
+		animation-duration: 2.4s;
+	}
 }
 
 .tebuto-empty {

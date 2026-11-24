@@ -60,7 +60,13 @@ export default function CategoryPicker({
 								<SelectableRow
 									key={cat.id}
 									checked={isSelectable && selected.includes(cat.id)}
-									disabled={!isSelectable || isLastSelected}
+									disabled={!isSelectable}
+									locked={isLastSelected}
+									title={
+										isLastSelected
+											? __('Mindestens eine Kategorie muss ausgewählt bleiben.', 'tebuto-online-terminbuchung')
+											: undefined
+									}
 									onChange={() => onToggle(cat.id)}
 									leading={
 										<span
@@ -73,11 +79,6 @@ export default function CategoryPicker({
 									}
 								>
 									<span className="tebuto-category-label-text">{cat.name}</span>
-									{isLastSelected && (
-										<span className="tebuto-category-unavailable-hint">
-											{__('Mindestens eine Kategorie auswählen.', 'tebuto-online-terminbuchung')}
-										</span>
-									)}
 									{!isSelectable && (
 										<span className="tebuto-category-unavailable-hint">
 											{__('Nicht öffentlich', 'tebuto-online-terminbuchung')}

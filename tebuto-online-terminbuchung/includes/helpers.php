@@ -359,3 +359,45 @@ function tebuto_get_widget_account_capabilities( ?int $user_id = null ): array {
 		'is_managing_user'  => $is_managing_user,
 	);
 }
+
+/**
+ * CSS for the widget loading placeholder. Emitted once per request.
+ *
+ * @return string CSS rules.
+ */
+function tebuto_widget_loading_css(): string {
+	return '.tebuto-widget-loading{--tebuto-widget-loading-color:#00b4a9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;box-sizing:border-box;min-height:384px;padding:24px;color:#5d706e}'
+		. '.tebuto-widget-loading__spinner{box-sizing:border-box;width:28px;height:28px;border:3px solid var(--tebuto-widget-loading-color);border-right-color:transparent;border-radius:50%;animation:tebuto-widget-loading-spin .8s linear infinite}'
+		. '.tebuto-widget-loading__label{font-size:13px;line-height:1.4}'
+		. '@keyframes tebuto-widget-loading-spin{to{transform:rotate(360deg)}}'
+		. '@media (prefers-reduced-motion:reduce){.tebuto-widget-loading__spinner{animation-duration:2.4s}}';
+}
+
+/**
+ * Placeholder shown until the external booking or seminars widget mounts.
+ *
+ * The style block is included only on the first call in a request.
+ *
+ * @param string $primary_color Optional hex color for the spinner.
+ * @return string Placeholder markup.
+ */
+function tebuto_widget_loading_placeholder_html( string $primary_color = '' ): string {
+	static $css_printed = false;
+
+	$html  = '';
+	$color = sanitize_hex_color( $primary_color );
+
+	if ( ! $css_printed ) {
+		$css_printed = true;
+		$html       .= '<style id="tebuto-widget-loading-css">' . tebuto_widget_loading_css() . '</style>';
+	}
+
+	$style = $color ? ' style="' . esc_attr( '--tebuto-widget-loading-color:' . $color ) . '"' : '';
+
+	$html .= '<div class="tebuto-widget-loading" role="status"' . $style . '>';
+	$html .= '<span class="tebuto-widget-loading__spinner" aria-hidden="true"></span>';
+	$html .= '<span class="tebuto-widget-loading__label">' . esc_html__( 'Widget wird geladen…', 'tebuto-online-terminbuchung' ) . '</span>';
+	$html .= '</div>';
+
+	return $html;
+}

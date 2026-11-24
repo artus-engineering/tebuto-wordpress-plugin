@@ -288,9 +288,7 @@ function InspectorConfigurator({ variant, attributes, setAttributes }) {
 			</InspectorControls>
 
 			<div {...blockProps}>
-				<div className="tebuto-block-preview" ref={previewContainerRef}>
-					<div id={variant === 'seminars' ? 'tebuto-seminars-widget' : 'tebuto-booking-widget'} />
-				</div>
+				<div className="tebuto-block-preview" ref={previewContainerRef} />
 			</div>
 		</>
 	)
@@ -436,9 +434,7 @@ function AdminConfigurator({ variant, attributes, setAttributes, onVariantChange
 			</div>
 
 			<div className="tebuto-widget-settings-preview">
-				<div className="tebuto-block-preview" ref={previewContainerRef}>
-					<div id={variant === 'seminars' ? 'tebuto-seminars-widget' : 'tebuto-booking-widget'} />
-				</div>
+				<div className="tebuto-block-preview" ref={previewContainerRef} />
 			</div>
 		</div>
 	)

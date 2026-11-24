@@ -1,5 +1,35 @@
-import { useCallback, useEffect, useId, useRef } from 'react'
+import { __ } from '@wordpress/i18n'
+import { useCallback, useEffect, useId, useLayoutEffect, useRef } from 'react'
 import { getPreviewThemeDataset } from './previewTheme'
+
+const LOADING_COLOR_FALLBACK = '#00B4A9'
+
+function createLoadingPlaceholder(doc, primaryColor) {
+	const placeholder = doc.createElement('div')
+	placeholder.className = 'tebuto-widget-loading'
+	placeholder.setAttribute('role', 'status')
+	if (primaryColor) {
+		placeholder.style.setProperty('--tebuto-widget-loading-color', primaryColor)
+	}
+
+	const spinner = doc.createElement('span')
+	spinner.className = 'tebuto-widget-loading__spinner'
+	spinner.setAttribute('aria-hidden', 'true')
+
+	const label = doc.createElement('span')
+	label.className = 'tebuto-widget-loading__label'
+	label.textContent = __('Widget wird geladen…', 'tebuto-online-terminbuchung')
+
+	placeholder.append(spinner, label)
+	return placeholder
+}
+
+function createLoadingError(doc) {
+	const error = doc.createElement('p')
+	error.className = 'tebuto-widget-loading-error'
+	error.textContent = __('Widget-Vorschau konnte nicht geladen werden.', 'tebuto-online-terminbuchung')
+	return error
+}
 
 function applyCommonDataset(script, therapistUuid, attributes, surface) {
 	const { border, inheritFont } = attributes
@@ -93,11 +123,13 @@ export default function useWidgetPreview(containerRef, options) {
 
 		const legacyId = variant === 'seminars' ? 'tebuto-seminars-widget' : 'tebuto-booking-widget'
 		const containerId = `${legacyId}-preview-${previewId}`
-		const mount = document.createElement('div')
+		const doc = containerRef.current.ownerDocument
+		const mount = doc.createElement('div')
 		mount.id = containerId
+		mount.appendChild(createLoadingPlaceholder(doc, attributes.primaryColor || LOADING_COLOR_FALLBACK))
 		containerRef.current.replaceChildren(mount)
 		if (attributes.customCss) {
-			const style = document.createElement('style')
+			const style = doc.createElement('style')
 			const css = attributes.customCss.replaceAll(`#${legacyId}`, ':scope')
 			style.textContent = `@scope (#${containerId}) { ${css} }`
 			containerRef.current.appendChild(style)
@@ -107,9 +139,14 @@ export default function useWidgetPreview(containerRef, options) {
 			widgetScriptRef.current.remove()
 		}
 
-		const script = document.createElement('script')
+		const script = doc.createElement('script')
 		script.src = widgetUrl
 		script.dataset.containerId = containerId
+		script.onerror = () => {
+			if (mount.isConnected) {
+				mount.replaceChildren(createLoadingError(doc))
+			}
+		}
 		applyCommonDataset(script, therapistUuid, attributes, surface)
 
 		if (variant === 'booking') {
@@ -132,6 +169,16 @@ export default function useWidgetPreview(containerRef, options) {
 		selectedCategories,
 		shouldUseConfiguredCategories
 	])
+
+	useLayoutEffect(() => {
+		const container = containerRef.current
+		if (!container || container.childElementCount > 0 || !therapistUuid || !widgetUrl) {
+			return
+		}
+		container.appendChild(
+			createLoadingPlaceholder(container.ownerDocument, attributes.primaryColor || LOADING_COLOR_FALLBACK)
+		)
+	}, [containerRef, therapistUuid, widgetUrl, attributes.primaryColor])
 
 	useEffect(() => {
 		const timer = setTimeout(() => {

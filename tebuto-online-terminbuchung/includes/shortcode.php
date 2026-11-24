@@ -236,7 +236,8 @@ function tebuto_render_booking_widget_html( string $widget_id, int $instance_id,
 		$attr_string .= ' ' . $key . '="' . $value . '"';
 	}
 
-	$output = '<div id="' . esc_attr( $widget_id ) . '"></div>';
+	$primary_color = isset( $attrs['data-primary-color'] ) ? $attrs['data-primary-color'] : '';
+	$output        = '<div id="' . esc_attr( $widget_id ) . '">' . tebuto_widget_loading_placeholder_html( $primary_color ) . '</div>';
 	// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript -- External booking widget must load inline with data-* attributes.
 	$output .= '<script src="' . esc_url( TEBUTO_WIDGET_URL ) . '"' . $attr_string . ' async></script>';
 

@@ -18,6 +18,7 @@ for (const width of [1440, 390]) {
 				const container = page.locator(`[id="${id}"]`)
 				await expect(container).toBeVisible()
 				await expect(container.locator('.widget-container')).toBeVisible()
+				await expect(container.locator('.tebuto-widget-loading')).toHaveCount(0)
 				const type = (await script.getAttribute('src'))?.includes('seminars') ? 'seminars' : 'booking'
 				// Omitted legacy colors preserve each actual widget's own default palette.
 				const expectedPrimary = (await script.getAttribute('data-primary-color')) || (type === 'booking' ? '#007f78' : '#00B4A9')
