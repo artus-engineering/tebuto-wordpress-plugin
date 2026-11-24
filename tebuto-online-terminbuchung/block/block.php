@@ -167,7 +167,17 @@ function tebuto_configured_category_id( $category ): ?int {
  * @return string Widget markup.
  */
 function tebuto_render_booking_block( array $attributes ): string {
-	return tebuto_widget_shortcode( tebuto_block_shortcode_attributes( $attributes ) );
+	$configured = json_decode( (string) ( $attributes['configuredCategoriesJson'] ?? '' ), true );
+	$categories = is_array( $configured ) ? array_values(
+		array_filter(
+			$configured,
+			static function ( $category ): bool {
+				return null !== tebuto_configured_category_id( $category );
+			}
+		)
+	) : array();
+
+	return tebuto_render_booking_widget( tebuto_block_shortcode_attributes( $attributes ), $categories );
 }
 
 /**

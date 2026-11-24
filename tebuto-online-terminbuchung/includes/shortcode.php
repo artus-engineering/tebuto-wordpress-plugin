@@ -264,6 +264,17 @@ function tebuto_render_booking_widget_html( string $widget_id, int $instance_id,
  * @return string Widget HTML output.
  */
 function tebuto_widget_shortcode( $atts = array() ): string {
+	return tebuto_render_booking_widget( $atts );
+}
+
+/**
+ * Render booking markup using saved block categories or live shortcode enrichment.
+ *
+ * @param array<string, string>|string          $atts                  Shortcode attributes.
+ * @param array<int, array<string, mixed>>|null $configured_categories Saved categories; null enables API enrichment.
+ * @return string Widget HTML output.
+ */
+function tebuto_render_booking_widget( $atts = array(), ?array $configured_categories = null ): string {
 	global $tebuto_widget_instance_count;
 
 	if ( is_admin() ) {
@@ -288,11 +299,15 @@ function tebuto_widget_shortcode( $atts = array() ): string {
 
 	$widget_attrs = tebuto_build_booking_widget_base_attrs( $therapist_uuid, $widget_id, $settings, $theme_defaults );
 
-	if ( $settings['show_provider_filter'] === 'true' ) {
+	if ( null === $configured_categories && $settings['show_provider_filter'] === 'true' ) {
 		$widget_attrs = tebuto_enrich_attrs_for_provider_filter( $widget_attrs, (int) $current_user_id, $settings['categories'] );
 	}
 
-	$widget_attrs = tebuto_enrich_attrs_for_subaccount_categories( $widget_attrs, (int) $current_user_id, $settings['categories'] );
+	if ( null === $configured_categories ) {
+		$widget_attrs = tebuto_enrich_attrs_for_subaccount_categories( $widget_attrs, (int) $current_user_id, $settings['categories'] );
+	} elseif ( array() !== $configured_categories ) {
+		$widget_attrs['data-configured-categories'] = esc_attr( wp_json_encode( $configured_categories ) );
+	}
 
 	if ( ! empty( $settings['categories'] ) ) {
 		$widget_attrs['data-categories'] = esc_attr( $settings['categories'] );
