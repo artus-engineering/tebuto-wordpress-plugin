@@ -151,7 +151,8 @@ body.tebuto-fullheight #wpcontent,
         overflow: hidden;
     }
 
-    body.tebuto-fullheight .tebuto-page-bookings > .tebuto-filters-panel {
+    body.tebuto-fullheight .tebuto-page-bookings > .tebuto-filters-panel,
+    body.tebuto-fullheight .tebuto-page-categories > .tebuto-info-box {
         flex-shrink: 0;
     }
 
@@ -173,6 +174,14 @@ body.tebuto-fullheight #wpcontent,
     }
 
 
+}
+
+/* ==========================================================================
+   Categories
+   ========================================================================== */
+
+.tebuto-page-categories > .tebuto-info-box {
+    margin: 0 0 16px;
 }
 
 /* ==========================================================================

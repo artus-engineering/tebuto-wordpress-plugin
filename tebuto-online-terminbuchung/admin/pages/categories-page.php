@@ -52,6 +52,16 @@ function tebuto_categories_page(): void {
 			),
 		)
 	);
+
+	$capabilities = tebuto_get_widget_account_capabilities();
+	if ( ! empty( $capabilities['has_managed_users'] ) ) :
+		?>
+		<div class="tebuto-info-box">
+			<span class="dashicons dashicons-info"></span>
+			<p><?php esc_html_e( 'Hier siehst und verwaltest du nur die Kategorien deines eigenen Kontos. Kategorien deiner verwalteten Konten werden im Dashboard mit angezeigt, lassen sich hier aber nicht bearbeiten.', 'tebuto-online-terminbuchung' ); ?></p>
+		</div>
+		<?php
+	endif;
 	?>
 
 		<!-- Categories Table -->
