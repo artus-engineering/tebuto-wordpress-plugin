@@ -1,6 +1,14 @@
 packages:
   - 'tebuto-online-terminbuchung/block'
 
+# Transitive fixes (@wordpress/scripts / jest / eslint); remove when upstream lockfiles ship patched versions.
+overrides:
+  glob: '>=14.0.2'
+  js-yaml: '>=5.4.1'
+  katex: '>=0.18.2'
+  minimatch: '>=11.0.1'
+  serialize-javascript: '>=7.1.3'
+  smol-toml: '>=1.9.0'
 
 peerDependencyRules:
   allowedVersions:
@@ -15,3 +23,16 @@ allowBuilds:
   fsevents: false
   lefthook: true
   unrs-resolver: false
+
+minimumReleaseAgeExclude:
+  - '@biomejs/biome@2.6.9'
+  - '@biomejs/cli-android-arm64@2.6.9'
+  - '@biomejs/cli-android-x64@2.6.9'
+  - '@biomejs/cli-darwin-arm64@2.6.9'
+  - '@biomejs/cli-darwin-x64@2.6.9'
+  - '@biomejs/cli-linux-arm64-musl@2.6.9'
+  - '@biomejs/cli-linux-arm64@2.6.9'
+  - '@biomejs/cli-linux-x64-musl@2.6.9'
+  - '@biomejs/cli-linux-x64@2.6.9'
+  - '@biomejs/cli-win32-arm64@2.6.9'
+  - '@biomejs/cli-win32-x64@2.6.9'
