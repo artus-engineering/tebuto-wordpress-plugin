@@ -4,7 +4,7 @@ Tags: Praxissoftware, Terminbuchung, Therapie, Buchungswidget, Kalender
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 2.4.5
+Stable tag: 2.5.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -120,6 +120,12 @@ Unter **Tebuto → Shortcode** kannst du Farben, Theme-Presets, Kategorienfilter
 
 == Changelog ==
 
+= 2.5.0 =
+* **Verbesserung: Admin-Oberfläche** – Einheitliche Typografie, überarbeitete Bedienelemente und responsiver Widget-Konfigurator ohne verschachteltes Scrollen
+* **Verbesserung: Widgets** – Gutenberg-Blöcke übernehmen gespeicherte Kategorien und eigene Farben zuverlässiger; mehrere Widgets und Vorschauen bleiben voneinander getrennt
+* **Verbesserung: Ladezustand** – Buchungs- und Seminare-Widgets zeigen beim Laden einen Indikator; die letzte ausgewählte Kategorie bleibt sichtbar
+* **Sicherheit** – OAuth-Verbindung und Auswahl des verbundenen Kontos sind auf Administratoren beschränkt
+
 = 2.4.5 =
 * TODO: Add changelog entries
 
@@ -211,6 +217,9 @@ Unter **Tebuto → Shortcode** kannst du Farben, Theme-Presets, Kategorienfilter
 * Professionelles Admin-Interface
 
 == Upgrade Notice ==
+
+= 2.5.0 =
+Überarbeitete Admin-Oberfläche und Widget-Konfiguration, zuverlässigere Gutenberg-Blöcke und sichtbare Ladezustände für Buchungs- und Seminare-Widgets.
 
 = 2.4.5 =
 TODO: Add upgrade notice
