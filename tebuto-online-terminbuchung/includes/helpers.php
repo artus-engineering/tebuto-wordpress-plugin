@@ -13,6 +13,10 @@ defined( 'ABSPATH' ) || exit;
  * @return string Authorization URL.
  */
 function tebuto_get_authorize_url(): string {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return '';
+	}
+
 	$auth_url     = TEBUTO_AUTH_URL . '/realms/tebuto-therapists/protocol/openid-connect/auth';
 	$redirect_uri = admin_url( 'admin.php?page=tebuto-integration' );
 	$state        = wp_create_nonce( 'tebuto_auth' );
@@ -284,28 +288,33 @@ function tebuto_get_therapist_uuid(): string {
 function tebuto_get_connected_user_id(): int {
 	$current_user_id = get_current_user_id();
 
-	// If the current user has a therapist UUID, use them directly.
-	if ( $current_user_id > 0 ) {
+	// Only administrators may provide the site's Tebuto connection.
+	if ( $current_user_id > 0 && current_user_can( 'manage_options' ) ) {
 		$uuid = tebuto_get_user_meta( $current_user_id, 'therapist_uuid' );
 		if ( ! empty( $uuid ) ) {
 			return $current_user_id;
 		}
 	}
 
-	// Find any WordPress user who has connected to Tebuto.
+	// Older connections may belong to users whose administrator access was removed.
 	// phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Necessary lookup for the connected therapist account.
 	$users = get_users(
 		array(
 			'meta_key'     => TEBUTO_META_PREFIX . 'therapist_uuid',
 			'meta_compare' => '!=',
 			'meta_value'   => '',
-			'number'       => 1,
 			'fields'       => 'ID',
 		)
 	);
 	// phpcs:enable WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 
-	return ! empty( $users ) ? (int) $users[0] : 0;
+	foreach ( $users as $user_id ) {
+		if ( user_can( (int) $user_id, 'manage_options' ) ) {
+			return (int) $user_id;
+		}
+	}
+
+	return 0;
 }
 
 /**
@@ -349,4 +358,46 @@ function tebuto_get_widget_account_capabilities( ?int $user_id = null ): array {
 		'has_managed_users' => $has_managed_users,
 		'is_managing_user'  => $is_managing_user,
 	);
+}
+
+/**
+ * CSS for the widget loading placeholder. Emitted once per request.
+ *
+ * @return string CSS rules.
+ */
+function tebuto_widget_loading_css(): string {
+	return '.tebuto-widget-loading{--tebuto-widget-loading-color:#00b4a9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;box-sizing:border-box;min-height:384px;padding:24px;color:#5d706e}'
+		. '.tebuto-widget-loading__spinner{box-sizing:border-box;width:28px;height:28px;border:3px solid var(--tebuto-widget-loading-color);border-right-color:transparent;border-radius:50%;animation:tebuto-widget-loading-spin .8s linear infinite}'
+		. '.tebuto-widget-loading__label{font-size:13px;line-height:1.4}'
+		. '@keyframes tebuto-widget-loading-spin{to{transform:rotate(360deg)}}'
+		. '@media (prefers-reduced-motion:reduce){.tebuto-widget-loading__spinner{animation-duration:2.4s}}';
+}
+
+/**
+ * Placeholder shown until the external booking or seminars widget mounts.
+ *
+ * The style block is included only on the first call in a request.
+ *
+ * @param string $primary_color Optional hex color for the spinner.
+ * @return string Placeholder markup.
+ */
+function tebuto_widget_loading_placeholder_html( string $primary_color = '' ): string {
+	static $css_printed = false;
+
+	$html  = '';
+	$color = sanitize_hex_color( $primary_color );
+
+	if ( ! $css_printed ) {
+		$css_printed = true;
+		$html       .= '<style id="tebuto-widget-loading-css">' . tebuto_widget_loading_css() . '</style>';
+	}
+
+	$style = $color ? ' style="' . esc_attr( '--tebuto-widget-loading-color:' . $color ) . '"' : '';
+
+	$html .= '<div class="tebuto-widget-loading" role="status"' . $style . '>';
+	$html .= '<span class="tebuto-widget-loading__spinner" aria-hidden="true"></span>';
+	$html .= '<span class="tebuto-widget-loading__label">' . esc_html__( 'Widget wird geladen…', 'tebuto-online-terminbuchung' ) . '</span>';
+	$html .= '</div>';
+
+	return $html;
 }

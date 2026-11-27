@@ -29,7 +29,7 @@ function applyPreset(setAttributes, preset) {
 	})
 }
 
-function useBookingCategorySync(attributes, setAttributes, availableCategories) {
+function useBookingCategorySync(attributes, setAttributes, availableCategories, canSync) {
 	const { categories, configuredCategoriesJson, showProviderFilter } = attributes
 
 	const selectedCategories = useMemo(
@@ -49,6 +49,7 @@ function useBookingCategorySync(attributes, setAttributes, availableCategories) 
 	const shouldUseConfiguredCategories = showProviderFilter || hasSubaccountCategoriesSelected
 
 	useEffect(() => {
+		if (!canSync) return
 		if (!shouldUseConfiguredCategories || selectedAvailableCategories.length === 0) {
 			if (configuredCategoriesJson) {
 				setAttributes({ configuredCategoriesJson: '' })
@@ -71,7 +72,7 @@ function useBookingCategorySync(attributes, setAttributes, availableCategories) 
 				configuredCategoriesJson: nextCategoriesJson
 			})
 		}
-	}, [selectedAvailableCategories, shouldUseConfiguredCategories, configuredCategoriesJson, setAttributes])
+	}, [canSync, selectedAvailableCategories, shouldUseConfiguredCategories, configuredCategoriesJson, setAttributes])
 
 	useEffect(() => {
 		if (availableCategories.length > 0 && (!categories || categories.trim() === '')) {
@@ -87,6 +88,9 @@ function useBookingCategorySync(attributes, setAttributes, availableCategories) 
 	const toggleCategory = (categoryId) => {
 		const category = availableCategories.find((entry) => entry.id === categoryId)
 		if (category && !isCategoryWidgetSelectable(category)) {
+			return
+		}
+		if (selectedCategories.includes(categoryId) && selectedAvailableCategories.length <= 1) {
 			return
 		}
 
@@ -233,7 +237,8 @@ function InspectorConfigurator({ variant, attributes, setAttributes }) {
 	const bookingSync = useBookingCategorySync(
 		attributes,
 		setAttributes,
-		variant === 'booking' ? availableCategories : []
+		variant === 'booking' ? availableCategories : [],
+		variant === 'booking' && !loading && !error && !sessionExpired
 	)
 	const seminarSync = useSeminarSync(attributes, setAttributes)
 
@@ -261,29 +266,29 @@ function InspectorConfigurator({ variant, attributes, setAttributes }) {
 	return (
 		<>
 			<InspectorControls>
-				<ConfiguratorPanels
-					variant={variant}
-					attributes={attributes}
-					setAttributes={setAttributes}
-					availableCategories={availableCategories}
-					loadingCategories={loading}
-					categoriesError={error}
-					selectedCategories={bookingSync.selectedCategories}
-					selectedAvailableCategories={bookingSync.selectedAvailableCategories}
-					hasSubaccountCategoriesSelected={bookingSync.hasSubaccountCategoriesSelected}
-					toggleCategory={bookingSync.toggleCategory}
-					availableSeminars={availableSeminars}
-					loadingSeminars={loadingSeminars}
-					seminarsError={seminarsError}
-					selectedSeminars={seminarSync.selectedSeminars}
-					toggleSeminar={seminarSync.toggleSeminar}
-				/>
+				<div className="tebuto-widget-configurator">
+					<ConfiguratorPanels
+						variant={variant}
+						attributes={attributes}
+						setAttributes={setAttributes}
+						availableCategories={availableCategories}
+						loadingCategories={loading}
+						categoriesError={error}
+						selectedCategories={bookingSync.selectedCategories}
+						selectedAvailableCategories={bookingSync.selectedAvailableCategories}
+						hasSubaccountCategoriesSelected={bookingSync.hasSubaccountCategoriesSelected}
+						toggleCategory={bookingSync.toggleCategory}
+						availableSeminars={availableSeminars}
+						loadingSeminars={loadingSeminars}
+						seminarsError={seminarsError}
+						selectedSeminars={seminarSync.selectedSeminars}
+						toggleSeminar={seminarSync.toggleSeminar}
+					/>
+				</div>
 			</InspectorControls>
 
 			<div {...blockProps}>
-				<div className="tebuto-block-preview" ref={previewContainerRef}>
-					<div id={variant === 'seminars' ? 'tebuto-seminars-widget' : 'tebuto-booking-widget'} />
-				</div>
+				<div className="tebuto-block-preview" ref={previewContainerRef} />
 			</div>
 		</>
 	)
@@ -356,11 +361,13 @@ function AdminConfigurator({ variant, attributes, setAttributes, onVariantChange
 	const bookingSync = useBookingCategorySync(
 		attributes,
 		setAttributes,
-		variant === 'booking' ? availableCategories : []
+		variant === 'booking' ? availableCategories : [],
+		variant === 'booking' && !loading && !error && !sessionExpired
 	)
 	const seminarSync = useSeminarSync(attributes, setAttributes)
 
 	useWidgetPreview(previewContainerRef, {
+		surface: 'admin',
 		variant,
 		therapistUuid,
 		widgetUrl,
@@ -413,6 +420,7 @@ function AdminConfigurator({ variant, attributes, setAttributes, onVariantChange
 					<PanelBody title={__('Shortcode', 'tebuto-online-terminbuchung')} initialOpen={true}>
 						<TextareaControl
 							label={__('Shortcode kopieren', 'tebuto-online-terminbuchung')}
+							hideLabelFromVision
 							value={shortcode}
 							readOnly
 							rows={3}
@@ -426,9 +434,7 @@ function AdminConfigurator({ variant, attributes, setAttributes, onVariantChange
 			</div>
 
 			<div className="tebuto-widget-settings-preview">
-				<div className="tebuto-block-preview" ref={previewContainerRef}>
-					<div id={variant === 'seminars' ? 'tebuto-seminars-widget' : 'tebuto-booking-widget'} />
-				</div>
+				<div className="tebuto-block-preview" ref={previewContainerRef} />
 			</div>
 		</div>
 	)

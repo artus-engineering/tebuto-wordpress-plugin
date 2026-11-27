@@ -41,7 +41,7 @@ function tebuto_parse_booking_widget_settings( $parsed, $theme_defaults ): array
 		'show_location_quick_filter'    => $parsed['show_location_quick_filter'] === 'true' ? 'true' : 'false',
 		'show_category_selection_first' => $parsed['show_category_selection_first'] === 'false' ? 'false' : 'true',
 		'categories'                    => preg_replace( '/[^0-9,]/', '', $parsed['categories'] ),
-		'custom_css'                    => wp_strip_all_tags( $parsed['custom_css'] ),
+		'custom_css'                    => wp_strip_all_tags( html_entity_decode( $parsed['custom_css'], ENT_QUOTES, 'UTF-8' ) ),
 	);
 }
 
@@ -236,13 +236,15 @@ function tebuto_render_booking_widget_html( string $widget_id, int $instance_id,
 		$attr_string .= ' ' . $key . '="' . $value . '"';
 	}
 
-	$output = '<div id="' . esc_attr( $widget_id ) . '"></div>';
+	$primary_color = isset( $attrs['data-primary-color'] ) ? $attrs['data-primary-color'] : '';
+	$output        = '<div id="' . esc_attr( $widget_id ) . '">' . tebuto_widget_loading_placeholder_html( $primary_color ) . '</div>';
 	// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript -- External booking widget must load inline with data-* attributes.
 	$output .= '<script src="' . esc_url( TEBUTO_WIDGET_URL ) . '"' . $attr_string . ' async></script>';
 
 	if ( ! empty( $custom_css ) ) {
-		$style_id = 'tebuto-custom-css' . ( $instance_id > 1 ? '-' . $instance_id : '' );
-		$output  .= '<style id="' . esc_attr( $style_id ) . '">' . $custom_css . '</style>';
+		$style_id   = 'tebuto-custom-css' . ( $instance_id > 1 ? '-' . $instance_id : '' );
+		$custom_css = str_replace( '#tebuto-booking-widget', ':scope', $custom_css );
+		$output    .= '<style id="' . esc_attr( $style_id ) . '">@scope (#' . esc_attr( $widget_id ) . ') {' . $custom_css . '}</style>';
 	}
 
 	return $output;
@@ -263,6 +265,17 @@ function tebuto_render_booking_widget_html( string $widget_id, int $instance_id,
  * @return string Widget HTML output.
  */
 function tebuto_widget_shortcode( $atts = array() ): string {
+	return tebuto_render_booking_widget( $atts );
+}
+
+/**
+ * Render booking markup using saved block categories or live shortcode enrichment.
+ *
+ * @param array<string, string>|string          $atts                  Shortcode attributes.
+ * @param array<int, array<string, mixed>>|null $configured_categories Saved categories; null enables API enrichment.
+ * @return string Widget HTML output.
+ */
+function tebuto_render_booking_widget( $atts = array(), ?array $configured_categories = null ): string {
 	global $tebuto_widget_instance_count;
 
 	if ( is_admin() ) {
@@ -287,11 +300,15 @@ function tebuto_widget_shortcode( $atts = array() ): string {
 
 	$widget_attrs = tebuto_build_booking_widget_base_attrs( $therapist_uuid, $widget_id, $settings, $theme_defaults );
 
-	if ( $settings['show_provider_filter'] === 'true' ) {
+	if ( null === $configured_categories && $settings['show_provider_filter'] === 'true' ) {
 		$widget_attrs = tebuto_enrich_attrs_for_provider_filter( $widget_attrs, (int) $current_user_id, $settings['categories'] );
 	}
 
-	$widget_attrs = tebuto_enrich_attrs_for_subaccount_categories( $widget_attrs, (int) $current_user_id, $settings['categories'] );
+	if ( null === $configured_categories ) {
+		$widget_attrs = tebuto_enrich_attrs_for_subaccount_categories( $widget_attrs, (int) $current_user_id, $settings['categories'] );
+	} elseif ( array() !== $configured_categories ) {
+		$widget_attrs['data-configured-categories'] = esc_attr( wp_json_encode( $configured_categories ) );
+	}
 
 	if ( ! empty( $settings['categories'] ) ) {
 		$widget_attrs['data-categories'] = esc_attr( $settings['categories'] );

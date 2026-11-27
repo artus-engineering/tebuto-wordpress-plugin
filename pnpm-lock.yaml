@@ -196,6 +196,9 @@ importers:
       '@biomejs/biome':
         specifier: 2.6.9
         version: 2.6.9
+      '@playwright/test':
+        specifier: 1.62.1
+        version: 1.62.1
       chokidar-cli:
         specifier: ^3.0.0
         version: 3.0.0
@@ -223,7 +226,7 @@ importers:
     devDependencies:
       '@wordpress/scripts':
         specifier: ^37.2.0
-        version: 37.2.0(@playwright/test@1.65.1)(@types/node@26.6.6)(@typescript-eslint/eslint-plugin@8.73.0(@typescript-eslint/parser@8.73.0(eslint@10.15.0(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(eslint@10.15.0(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(@typescript-eslint/parser@8.73.0(eslint@10.15.0(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(@wordpress/theme@5.0.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(csso@5.0.5)(jest@30.5.2(@types/node@26.6.6)(babel-plugin-macros@3.1.0)(supports-color@10.2.2))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(supports-color@10.2.2)(svgo@3.3.5)(type-fest@5.10.0)(typescript@6.0.3)(yauzl@2.10.0)
+        version: 37.2.0(@playwright/test@1.62.1)(@types/node@26.6.6)(@typescript-eslint/eslint-plugin@8.73.0(@typescript-eslint/parser@8.73.0(eslint@10.15.0(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(eslint@10.15.0(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(@typescript-eslint/parser@8.73.0(eslint@10.15.0(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(@wordpress/theme@5.0.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(csso@5.0.5)(jest@30.5.2(@types/node@26.6.6)(babel-plugin-macros@3.1.0)(supports-color@10.2.2))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(supports-color@10.2.2)(svgo@3.3.5)(type-fest@5.10.0)(typescript@6.0.3)(yauzl@2.10.0)
       react:
         specifier: ^19.3.1
         version: 19.3.1
@@ -1707,8 +1710,8 @@ packages:
     resolution: {integrity: sha512-SEeaJLb3qBNF/OaXnaR1NmmBbFYk1zC0ZH/52fATcRPLFg/p791YrcyFFy44Bo9sLaGuSuLp5Q6axbb/O+v/RA==}
     engines: {node: ^14.18.0 || >=16.0.0}
 
-  '@playwright/test@1.65.1':
-    resolution: {integrity: sha512-y+NCIRm2LvY4slUVWvGh1nujJ8RF/hEisIsq2mtUPgdQC4L701bq5hZGMhrpeXjACvwvO9tj5dJqhvM6TP9lbw==}
+  '@playwright/test@1.62.1':
+    resolution: {integrity: sha512-DTcUc8qii+cpHvtOwggMtBRMjKZHXYWdw8syRYu2vtzuq4Wxphqq4NfCs5Zt44L6mA8rfDfj+PHnxFc/FeK6mQ==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -4283,6 +4286,11 @@ packages:
     resolution: {integrity: sha512-Rx/WycZ60HOaqLKAi6cHRKKI7zxWbJ31MhntmtwMoaTeF7XFH9hhBp8vITaMidfljRQ6eYWCKkaTK+ykVJHP2A==}
     engines: {node: '>= 0.8'}
 
+  fsevents@2.3.2:
+    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
+    engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
+    os: [darwin]
+
   fsevents@2.3.3:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
@@ -5795,13 +5803,13 @@ packages:
     resolution: {integrity: sha512-V9kOzaItwDgqlryhXysQsAXUEKi5O7kqWUaP3dXI7MLvkPqWWMb4wVb1QAtmEDCKI+XIAINsZoNKMFF7sZb1eg==}
     engines: {node: '>=16.0.0'}
 
-  playwright-core@1.65.1:
-    resolution: {integrity: sha512-hqPpz7blSMPxWVdoeE1yiBSzXsKiVOd2k+kjCvmUywD2GPO2Dd9HfcWnq9NN0GHbNZDFgZ9JfBFr+X5/BLo0qw==}
+  playwright-core@1.62.1:
+    resolution: {integrity: sha512-wPYSwEBJY9GHraISXqyqtx0na0LpO3XEX7jNDhntbex7tzUS7kLnZsOlFruFJB4Hi/rhDMjXGqHewDZ68nYZVw==}
     engines: {node: '>=20'}
     hasBin: true
 
-  playwright@1.65.1:
-    resolution: {integrity: sha512-vJ1FuoOrNwOKHUIVEvSt3jT1L+wjjDpwhwIstKtfvTh8XIG4FG4bIFuvNdMxi81LGfAhUgUZleVFaOLY4RIUUw==}
+  playwright@1.62.1:
+    resolution: {integrity: sha512-0M+L3LAD8/nm554LOla9Ayx0j0tmFZ0FBcoQ7F1VuVHpM/XpiC8RcDzBQB8W5+hA8L22THxELzeF+2WcUzvcLg==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -9062,9 +9070,9 @@ snapshots:
 
   '@pkgr/core@0.3.6': {}
 
-  '@playwright/test@1.65.1':
+  '@playwright/test@1.62.1':
     dependencies:
-      playwright: 1.65.1
+      playwright: 1.62.1
 
   '@pmmmwh/react-refresh-webpack-plugin@0.6.3(react-refresh@0.14.2)(type-fest@5.10.0)(webpack-dev-server@6.1.0)(webpack@5.113.0)':
     dependencies:
@@ -10123,9 +10131,9 @@ snapshots:
     dependencies:
       '@wordpress/deprecated': 5.2.0
 
-  '@wordpress/e2e-test-utils-playwright@3.3.0(@playwright/test@1.65.1)(@types/node@26.6.6)(supports-color@10.2.2)(webpack@5.113.0)(yauzl@2.10.0)':
+  '@wordpress/e2e-test-utils-playwright@3.3.0(@playwright/test@1.62.1)(@types/node@26.6.6)(supports-color@10.2.2)(webpack@5.113.0)(yauzl@2.10.0)':
     dependencies:
-      '@playwright/test': 1.65.1
+      '@playwright/test': 1.62.1
       change-case: 4.1.2
       get-port: 5.1.1
       lighthouse: 13.6.0(supports-color@10.2.2)(webpack@5.113.0)(yauzl@2.10.0)
@@ -10356,7 +10364,7 @@ snapshots:
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
 
-  '@wordpress/scripts@37.2.0(@playwright/test@1.65.1)(@types/node@26.6.6)(@typescript-eslint/eslint-plugin@8.73.0(@typescript-eslint/parser@8.73.0(eslint@10.15.0(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(eslint@10.15.0(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(@typescript-eslint/parser@8.73.0(eslint@10.15.0(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(@wordpress/theme@5.0.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(csso@5.0.5)(jest@30.5.2(@types/node@26.6.6)(babel-plugin-macros@3.1.0)(supports-color@10.2.2))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(supports-color@10.2.2)(svgo@3.3.5)(type-fest@5.10.0)(typescript@6.0.3)(yauzl@2.10.0)':
+  '@wordpress/scripts@37.2.0(@playwright/test@1.62.1)(@types/node@26.6.6)(@typescript-eslint/eslint-plugin@8.73.0(@typescript-eslint/parser@8.73.0(eslint@10.15.0(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(eslint@10.15.0(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(@typescript-eslint/parser@8.73.0(eslint@10.15.0(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(@wordpress/theme@5.0.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(csso@5.0.5)(jest@30.5.2(@types/node@26.6.6)(babel-plugin-macros@3.1.0)(supports-color@10.2.2))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(supports-color@10.2.2)(svgo@3.3.5)(type-fest@5.10.0)(typescript@6.0.3)(yauzl@2.10.0)':
     dependencies:
       '@babel/core': 7.29.13(supports-color@10.2.2)
       '@pmmmwh/react-refresh-webpack-plugin': 0.6.3(react-refresh@0.14.2)(type-fest@5.10.0)(webpack-dev-server@6.1.0)(webpack@5.113.0)
@@ -10364,7 +10372,7 @@ snapshots:
       '@wordpress/babel-preset-default': 10.2.0(supports-color@10.2.2)
       '@wordpress/browserslist-config': 7.2.0
       '@wordpress/dependency-extraction-webpack-plugin': 7.2.0(webpack@5.113.0)
-      '@wordpress/e2e-test-utils-playwright': 3.3.0(@playwright/test@1.65.1)(@types/node@26.6.6)(supports-color@10.2.2)(webpack@5.113.0)(yauzl@2.10.0)
+      '@wordpress/e2e-test-utils-playwright': 3.3.0(@playwright/test@1.62.1)(@types/node@26.6.6)(supports-color@10.2.2)(webpack@5.113.0)(yauzl@2.10.0)
       '@wordpress/eslint-plugin': 28.2.0(@typescript-eslint/eslint-plugin@8.73.0(@typescript-eslint/parser@8.73.0(eslint@10.15.0(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(eslint@10.15.0(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(@typescript-eslint/parser@8.73.0(eslint@10.15.0(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(eslint@10.15.0(supports-color@10.2.2))(jest@30.5.2(@types/node@26.6.6)(babel-plugin-macros@3.1.0)(supports-color@10.2.2))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(supports-color@10.2.2)(typescript@6.0.3)(wp-prettier@3.9.6)
       '@wordpress/npm-package-json-lint-config': 6.2.0(npm-package-json-lint@6.4.0(supports-color@10.2.2)(typescript@6.0.3))
       '@wordpress/postcss-plugins-preset': 6.2.0(postcss@8.5.33)
@@ -10410,7 +10418,7 @@ snapshots:
       webpack-cli: 5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@6.1.0)(webpack@5.113.0)
       webpack-dev-server: 6.1.0(supports-color@10.2.2)(webpack-cli@5.1.4)(webpack@5.113.0)
     optionalDependencies:
-      '@playwright/test': 1.65.1
+      '@playwright/test': 1.62.1
       jest: 30.5.2(@types/node@26.6.6)(babel-plugin-macros@3.1.0)(supports-color@10.2.2)
     transitivePeerDependencies:
       - '@minify-html/node'
@@ -12130,6 +12138,9 @@ snapshots:
       react-dom: 19.3.1(react@19.3.1)
 
   fresh@2.0.0: {}
+
+  fsevents@2.3.2:
+    optional: true
 
   fsevents@2.3.3:
     optional: true
@@ -13959,11 +13970,13 @@ snapshots:
       pvutils: 1.2.0
       tslib: 2.9.1
 
-  playwright-core@1.65.1: {}
+  playwright-core@1.62.1: {}
 
-  playwright@1.65.1:
+  playwright@1.62.1:
     dependencies:
-      playwright-core: 1.65.1
+      playwright-core: 1.62.1
+    optionalDependencies:
+      fsevents: 2.3.2
 
   plur@4.0.0:
     dependencies:

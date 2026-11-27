@@ -54,12 +54,19 @@ export default function CategoryPicker({
 					) : (
 						categories.map((cat) => {
 							const isSelectable = Boolean(cat.widgetSelectable ?? cat.publicBookingEnabled)
+							const isLastSelected = isSelectable && selected.includes(cat.id) && selectableCount === 1
 
 							return (
 								<SelectableRow
 									key={cat.id}
 									checked={isSelectable && selected.includes(cat.id)}
 									disabled={!isSelectable}
+									locked={isLastSelected}
+									title={
+										isLastSelected
+											? __('Mindestens eine Kategorie muss ausgewählt bleiben.', 'tebuto-online-terminbuchung')
+											: undefined
+									}
 									onChange={() => onToggle(cat.id)}
 									leading={
 										<span

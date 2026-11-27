@@ -50,6 +50,10 @@ jobs:
 
       - name: Check JavaScript formatting
         run: pnpm exec biome format .
+
+      - name: Widget contract unit tests
+        run: pnpm test:unit
+
   build:
     name: Build
     runs-on: ubuntu-latest

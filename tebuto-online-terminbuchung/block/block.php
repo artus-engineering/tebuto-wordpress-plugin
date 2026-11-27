@@ -13,17 +13,182 @@ defined( 'ABSPATH' ) || exit;
  * @return void
  */
 function tebuto_register_block(): void {
-	register_block_type( __DIR__ . '/build/block' );
+	register_block_type( __DIR__ . '/build/block', array( 'render_callback' => 'tebuto_render_booking_block' ) );
 
 	if ( is_admin() ) {
 		tebuto_maybe_refresh_seminars_feature_cache();
 	}
 
 	if ( tebuto_seminars_feature_enabled_for_account() ) {
-		register_block_type( __DIR__ . '/build/seminare' );
+		register_block_type( __DIR__ . '/build/seminare', array( 'render_callback' => 'tebuto_render_seminars_block' ) );
 	}
 }
 add_action( 'init', 'tebuto_register_block' );
+
+/**
+ * Map block attributes to the canonical shortcode renderer.
+ *
+ * Saved HTML stays compatible; public output uses the current site connection.
+ *
+ * @param array<string, mixed> $attributes Block attributes.
+ * @return array<string, string> Shortcode overrides.
+ */
+function tebuto_block_shortcode_attributes( array $attributes ): array {
+	$atts = tebuto_map_scalar_block_attributes( $attributes );
+	return tebuto_apply_configured_categories( $atts, $attributes );
+}
+
+/**
+ * Map camelCase block attributes onto shortcode attribute names.
+ *
+ * @param array<string, mixed> $attributes Block attributes.
+ * @return array<string, string> Shortcode overrides.
+ */
+function tebuto_map_scalar_block_attributes( array $attributes ): array {
+	$map  = array(
+		'primaryColor'               => 'primary_color',
+		'backgroundColor'            => 'background_color',
+		'textPrimary'                => 'text_primary',
+		'textSecondary'              => 'text_secondary',
+		'borderColor'                => 'border_color',
+		'border'                     => 'border',
+		'inheritFont'                => 'inherit_font',
+		'showQuickFilters'           => 'show_quick_filters',
+		'showProviderFilter'         => 'show_provider_filter',
+		'showLocationQuickFilter'    => 'show_location_quick_filter',
+		'showCategorySelectionFirst' => 'show_category_selection_first',
+		'categories'                 => 'categories',
+		'seminars'                   => 'seminars',
+		'showListFirst'              => 'show_list_first',
+		'customCss'                  => 'custom_css',
+	);
+	$atts = array();
+
+	foreach ( $map as $camel => $snake ) {
+		if ( ! array_key_exists( $camel, $attributes ) || ! is_scalar( $attributes[ $camel ] ) ) {
+			continue;
+		}
+
+		$atts[ $snake ] = tebuto_block_attribute_string( $attributes[ $camel ] );
+	}
+
+	return $atts;
+}
+
+/**
+ * Convert a scalar block attribute to a shortcode string.
+ *
+ * @param bool|float|int|string $value Block attribute value.
+ * @return string
+ */
+function tebuto_block_attribute_string( $value ): string {
+	if ( ! is_bool( $value ) ) {
+		return (string) $value;
+	}
+
+	if ( $value ) {
+		return 'true';
+	}
+
+	return 'false';
+}
+
+/**
+ * Apply saved category selections when the categories attribute is empty.
+ *
+ * Keeps saved subaccount selections usable when the management API is unavailable.
+ *
+ * @param array<string, string> $atts       Shortcode attributes.
+ * @param array<string, mixed>  $attributes Block attributes.
+ * @return array<string, string> Shortcode overrides.
+ */
+function tebuto_apply_configured_categories( array $atts, array $attributes ): array {
+	$configured = json_decode( (string) ( $attributes['configuredCategoriesJson'] ?? '' ), true );
+	if ( ! is_array( $configured ) ) {
+		return $atts;
+	}
+
+	$ids = tebuto_configured_category_ids( $configured, $atts );
+	if ( empty( $atts['categories'] ) && array() !== $ids ) {
+		$atts['categories'] = implode( ',', $ids );
+	}
+
+	return $atts;
+}
+
+/**
+ * Collect saved category ids and enable the provider filter for subaccounts.
+ *
+ * @param array<int, mixed>     $configured Saved category entries.
+ * @param array<string, string> $atts       Shortcode attributes, updated in place.
+ * @return int[] Category ids.
+ */
+function tebuto_configured_category_ids( array $configured, array &$atts ): array {
+	$ids = array();
+
+	foreach ( $configured as $category ) {
+		$id = tebuto_configured_category_id( $category );
+		if ( $id === null ) {
+			continue;
+		}
+
+		$ids[] = $id;
+		if ( ( $category['isFromSubaccount'] ?? false ) === true ) {
+			$atts['show_provider_filter'] = 'true';
+		}
+	}
+
+	return $ids;
+}
+
+/**
+ * Read a positive category id from a saved configurator entry.
+ *
+ * @param mixed $category Saved category entry.
+ * @return int|null
+ */
+function tebuto_configured_category_id( $category ): ?int {
+	if ( ! is_array( $category ) || empty( $category['id'] ) || ! is_numeric( $category['id'] ) ) {
+		return null;
+	}
+
+	$id = (int) $category['id'];
+	if ( $id <= 0 ) {
+		return null;
+	}
+
+	return $id;
+}
+
+/**
+ * Render a booking block through the shared shortcode path.
+ *
+ * @param array<string, mixed> $attributes Block attributes.
+ * @return string Widget markup.
+ */
+function tebuto_render_booking_block( array $attributes ): string {
+	$configured = json_decode( (string) ( $attributes['configuredCategoriesJson'] ?? '' ), true );
+	$categories = is_array( $configured ) ? array_values(
+		array_filter(
+			$configured,
+			static function ( $category ): bool {
+				return null !== tebuto_configured_category_id( $category );
+			}
+		)
+	) : array();
+
+	return tebuto_render_booking_widget( tebuto_block_shortcode_attributes( $attributes ), $categories );
+}
+
+/**
+ * Render a seminars block through the shared shortcode path.
+ *
+ * @param array<string, mixed> $attributes Block attributes.
+ * @return string Widget markup.
+ */
+function tebuto_render_seminars_block( array $attributes ): string {
+	return tebuto_seminars_widget_shortcode( tebuto_block_shortcode_attributes( $attributes ) );
+}
 
 /**
  * Build localized data shared by block editor and admin widget settings.

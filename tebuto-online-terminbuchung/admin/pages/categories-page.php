@@ -52,6 +52,16 @@ function tebuto_categories_page(): void {
 			),
 		)
 	);
+
+	$capabilities = tebuto_get_widget_account_capabilities();
+	if ( ! empty( $capabilities['has_managed_users'] ) ) :
+		?>
+		<div class="tebuto-info-box">
+			<span class="dashicons dashicons-info"></span>
+			<p><?php esc_html_e( 'Hier siehst und verwaltest du nur die Kategorien deines eigenen Kontos. Kategorien deiner verwalteten Konten werden im Dashboard mit angezeigt, lassen sich hier aber nicht bearbeiten.', 'tebuto-online-terminbuchung' ); ?></p>
+		</div>
+		<?php
+	endif;
 	?>
 
 		<!-- Categories Table -->
@@ -65,9 +75,6 @@ function tebuto_categories_page(): void {
 					<div class="tebuto-empty-state">
 						<span class="dashicons dashicons-category"></span>
 						<p><?php esc_html_e( 'Noch keine Kategorien vorhanden.', 'tebuto-online-terminbuchung' ); ?></p>
-						<button type="button" class="button button-primary tebuto-btn tebuto-btn--solid tebuto-btn--primary" id="tebuto-add-category-btn-empty">
-							<?php esc_html_e( 'Erste Kategorie erstellen', 'tebuto-online-terminbuchung' ); ?>
-						</button>
 					</div>
 				</div>
 			<?php else : ?>
@@ -126,7 +133,7 @@ function tebuto_categories_page(): void {
 												<?php wp_nonce_field( 'tebuto_category_action', 'tebuto_category_nonce' ); ?>
 												<input type="hidden" name="tebuto_action" value="delete_category">
 												<input type="hidden" name="category_id" value="<?php echo esc_attr( $category['id'] ); ?>">
-												<button type="submit" class="button button-small tebuto-btn tebuto-btn--solid tebuto-btn--danger tebuto-btn--sm">
+												<button type="submit" class="button button-small tebuto-btn tebuto-btn--outline tebuto-btn--danger tebuto-btn--sm">
 													<?php esc_html_e( 'Löschen', 'tebuto-online-terminbuchung' ); ?>
 												</button>
 											</form>
